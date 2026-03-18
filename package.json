@@ -1,6 +1,6 @@
 {
   "name": "local-context-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Local Context MCP server for sharing current local context with AI and users",
   "author": "Obalab",
   "private": true,

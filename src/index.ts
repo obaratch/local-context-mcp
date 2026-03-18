@@ -4,6 +4,7 @@ import { z } from "zod";
 import { SERVER_NAME, VERSION } from "./constants.js";
 import { devErrorTest } from "./tools/devErrorTest.js";
 import { devHelloworld } from "./tools/devHelloworld.js";
+import { whenIsNow } from "./tools/whenIsNow.js";
 
 export function createServer(): McpServer {
 	const server = new McpServer({
@@ -17,6 +18,17 @@ export function createServer(): McpServer {
 }
 
 export function registerTools(server: McpServer): void {
+	server.registerTool(
+		"when-is-now",
+		{
+			description: "現在日時を返す基本機能",
+			inputSchema: {},
+		},
+		async (params) => {
+			return whenIsNow(params);
+		},
+	);
+
 	server.registerTool(
 		"dev-helloworld",
 		{

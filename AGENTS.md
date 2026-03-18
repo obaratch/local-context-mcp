@@ -9,7 +9,7 @@
 - MCPサーバ名 "local-context"
 
 ### 基本機能 (tools)
-- "when-is-now": 現在日時を返す。デフォルトでは ISO 8601, 例:"2026-03-18T15:21:00+09:00"
+- "when-is-now": 現在日時を返す。[詳細](docs/tools/when-is-now.md)
 
 ### 開発者向け機能 (tools)
 - "dev-helloworld": メッセージ "hello world" を返す
