@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { SERVER_NAME, VERSION } from "./constants.js";
+import { devErrorTest } from "./tools/devErrorTest.js";
 import { devHelloworld } from "./tools/devHelloworld.js";
 
 export function createServer(): McpServer {
@@ -26,6 +27,20 @@ export function registerTools(server: McpServer): void {
 		},
 		async (params) => {
 			return devHelloworld(params);
+		},
+	);
+
+	server.registerTool(
+		"dev-error-test",
+		{
+			description: "結合テスト用。MCP仕様に沿ったエラーを返す。",
+			inputSchema: {
+				code: z.number().int().optional(),
+				message: z.string().optional(),
+			},
+		},
+		async (params) => {
+			return devErrorTest(params);
 		},
 	);
 }

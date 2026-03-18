@@ -55,6 +55,9 @@ describe("結合: MCPツールリスト取得", () => {
 				expect.objectContaining({
 					name: "dev-helloworld",
 				}),
+				expect.objectContaining({
+					name: "dev-error-test",
+				}),
 			]),
 		);
 	});

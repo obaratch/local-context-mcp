@@ -13,6 +13,7 @@
 
 ### 開発者向け機能 (tools)
 - "dev-helloworld": メッセージ "hello world" を返す
+- "dev-error-test": 結合テスト用。MCP仕様に沿ったエラーを返す。[詳細](docs/tools/dev-error-test.md)
 
 ## コマンド
 - 開発起動: `npm run dev`
