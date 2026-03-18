@@ -26,3 +26,42 @@ AIとユーザが同じ環境にいる前提で、現在の文脈を共有する
 - 結合テスト用の tool
 - MCP の tool error result を返す挙動を確認
 - 詳細は [`docs/tools/dev-error-test.md`](docs/tools/dev-error-test.md) を参照
+
+## LM Studio から Docker で使う
+
+詳細仕様は [`docs/docker.md`](docs/docker.md) を参照。
+
+### 事前準備
+- Docker イメージをビルドする
+
+```bash
+npm run docker:build
+```
+
+### 設定例
+- LM Studio の MCP サーバ設定に以下を追加する
+- `when-is-now` はサーバ実行環境のローカルタイムゾーンを返すため、`TZ` は明示する
+
+```json
+{
+  "mcpServers": {
+    "local-context": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm", 
+        "-e",
+        "TZ=Asia/Tokyo",
+        "obaratch/local-context-mcp-server"
+      ]
+    }
+  }
+}
+```
+
+### 確認
+- 接続後に `tools/list` で以下のツールが見えること
+  - `when-is-now`
+  - `dev-helloworld`
+  - `dev-error-test`

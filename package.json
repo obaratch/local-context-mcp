@@ -1,6 +1,6 @@
 {
   "name": "local-context-mcp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Local Context MCP server for sharing current local context with AI and users",
   "author": "Obalab",
   "private": true,
@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsx watch src/index.ts",
+    "docker:build": "docker build -t obaratch/local-context-mcp-server .",
     "test": "run-s test:unit test:integration",
     "test:unit": "vitest run tests/tools",
     "test:integration": "run-s build test:integration:run",

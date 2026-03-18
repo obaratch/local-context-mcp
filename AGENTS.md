@@ -18,6 +18,7 @@
 ## コマンド
 - 開発起動: `npm run dev`
 - ビルド: `npm run build`
+- Docker イメージビルド: `npm run docker:build`
 - テスト: `npm test`
 - format: `npm run format`
 - lint: `npm run lint`
@@ -32,3 +33,4 @@
 - [技術スタック](docs/tech-stack.md)
 - [Lint](docs/linting.md)
 - [テスト](docs/testing.md)
+- [Docker 利用仕様](docs/docker.md)
