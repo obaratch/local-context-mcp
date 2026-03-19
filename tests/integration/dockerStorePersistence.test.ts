@@ -73,15 +73,15 @@ async function createDockerStoreClient(
 	return client;
 }
 
-beforeAll(() => {
-	imageTag = buildDockerIntegrationTestImage();
-}, 60_000);
-
-afterEach(async () => {
-	await closeTrackedTransports(transports);
-});
-
 describeIf("結合: Docker store 永続化", () => {
+	beforeAll(() => {
+		imageTag = buildDockerIntegrationTestImage();
+	}, 60_000);
+
+	afterEach(async () => {
+		await closeTrackedTransports(transports);
+	});
+
 	test("同じ bind mount 先を再利用すると別コンテナからも保存値を読み出せること", async () => {
 		const storeDir = prepareDockerStoreDir();
 

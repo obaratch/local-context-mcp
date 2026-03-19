@@ -77,7 +77,11 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
-	process.env.LOCAL_CONTEXT_STORE_DIR = originalStoreDir;
+	if (originalStoreDir === undefined) {
+		delete process.env.LOCAL_CONTEXT_STORE_DIR;
+	} else {
+		process.env.LOCAL_CONTEXT_STORE_DIR = originalStoreDir;
+	}
 	vi.resetModules();
 
 	await Promise.all(

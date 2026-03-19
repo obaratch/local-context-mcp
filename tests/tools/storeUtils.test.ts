@@ -37,7 +37,11 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
-	process.env.LOCAL_CONTEXT_STORE_DIR = originalStoreDir;
+	if (originalStoreDir === undefined) {
+		delete process.env.LOCAL_CONTEXT_STORE_DIR;
+	} else {
+		process.env.LOCAL_CONTEXT_STORE_DIR = originalStoreDir;
+	}
 	vi.resetModules();
 
 	await Promise.all(
@@ -89,6 +93,17 @@ describe.sequential("単体: storeUtils", () => {
 		store.setValue("nullable", null);
 
 		expect(store.getValue("nullable")).toBeNull();
+	});
+
+	test("ドットを含むキーを文字列キーとして保存して読み出せること", async () => {
+		const storeDir = await createTestStoreDir();
+		const store = await loadStoreUtils(storeDir);
+
+		store.resetStoreForTest();
+		store.setValue("time.zone", "Asia/Tokyo");
+
+		expect(store.getValue("time.zone")).toBe("Asia/Tokyo");
+		expect(store.getValue("time")).toBeUndefined();
 	});
 
 	test("primitive 配列を保存して読み出せること", async () => {

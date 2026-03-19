@@ -16,6 +16,7 @@ function createStore(): Conf<StoreData> {
 		projectName: "local-context-mcp",
 		configName: "store",
 		cwd: process.env.LOCAL_CONTEXT_STORE_DIR ?? undefined,
+		accessPropertiesByDotNotation: false,
 	});
 }
 

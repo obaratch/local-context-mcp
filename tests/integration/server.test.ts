@@ -57,21 +57,25 @@ describe("結合: MCPツールリスト取得", () => {
 				}),
 			]),
 		);
-		expect(result.tools).not.toEqual(
-			expect.arrayContaining([
-				expect.objectContaining({
-					name: "dev-helloworld",
-				}),
-				expect.objectContaining({
-					name: "dev-error-test",
-				}),
-				expect.objectContaining({
-					name: "dev-store-set",
-				}),
-				expect.objectContaining({
-					name: "dev-store-get",
-				}),
-			]),
+		expect(result.tools).not.toContainEqual(
+			expect.objectContaining({
+				name: "dev-helloworld",
+			}),
+		);
+		expect(result.tools).not.toContainEqual(
+			expect.objectContaining({
+				name: "dev-error-test",
+			}),
+		);
+		expect(result.tools).not.toContainEqual(
+			expect.objectContaining({
+				name: "dev-store-set",
+			}),
+		);
+		expect(result.tools).not.toContainEqual(
+			expect.objectContaining({
+				name: "dev-store-get",
+			}),
 		);
 	});
 
