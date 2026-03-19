@@ -1,14 +1,13 @@
-import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-
-type JsonPrimitive = string | number | boolean | null;
-type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
+import type { StoreValue } from "../../src/utils/storeUtils.js";
+import {
+	cleanupTrackedTempDirs,
+	createTrackedTempDir,
+} from "../utils/tempDirUtils.js";
 
 type DevStoreSetParams = {
 	key: string;
-	value: JsonValue;
+	value: StoreValue;
 };
 
 type DevStoreGetParams = {
@@ -20,7 +19,7 @@ type DevStoreModule = {
 		content: [{ type: "text"; text: "stored" }];
 		structuredContent: {
 			key: string;
-			value: JsonValue;
+			value: StoreValue;
 		};
 	}>;
 	devStoreGet: (params: DevStoreGetParams) => Promise<{
@@ -29,7 +28,7 @@ type DevStoreModule = {
 			| {
 					key: string;
 					found: true;
-					value: JsonValue;
+					value: StoreValue;
 			  }
 			| {
 					key: string;
@@ -43,12 +42,7 @@ const originalStoreDir = process.env.LOCAL_CONTEXT_STORE_DIR;
 const tempDirs: string[] = [];
 
 async function createTestStoreDir(): Promise<string> {
-	const directory = await mkdtemp(
-		join(tmpdir(), "local-context-dev-store-test-"),
-	);
-	tempDirs.push(directory);
-
-	return directory;
+	return createTrackedTempDir(tempDirs, "local-context-dev-store-test-");
 }
 
 async function loadDevStoreModule(storeDir: string): Promise<DevStoreModule> {
@@ -84,14 +78,7 @@ afterEach(async () => {
 	}
 	vi.resetModules();
 
-	await Promise.all(
-		tempDirs.splice(0).map(async (dir) =>
-			rm(dir, {
-				force: true,
-				recursive: true,
-			}),
-		),
-	);
+	await cleanupTrackedTempDirs(tempDirs);
 });
 
 describe.sequential("単体: dev-store-*", () => {

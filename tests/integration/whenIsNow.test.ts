@@ -12,8 +12,10 @@ afterEach(async () => {
 });
 
 describe("結合: when-is-now", () => {
-	test("callTool でローカルタイムゾーンの現在日時を返すこと", async () => {
-		const client = await createIntegrationTestClient(transports);
+	test("TZ が明示されている場合はそのタイムゾーンで現在日時を返すこと", async () => {
+		const client = await createIntegrationTestClient(transports, {
+			env: { TZ: "Asia/Tokyo" },
+		});
 
 		const result = await client.callTool({
 			name: "when-is-now",
@@ -29,6 +31,7 @@ describe("結合: when-is-now", () => {
 		});
 		expect(result.structuredContent).toEqual({
 			now: content.text,
+			timezone: "Asia/Tokyo",
 		});
 	});
 });
