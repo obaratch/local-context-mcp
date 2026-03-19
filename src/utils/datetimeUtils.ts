@@ -12,6 +12,11 @@ export function parseIso(value: string): Date {
 	return parseISO(value);
 }
 
+/** ISO 8601 文字列として妥当かを返す。 */
+export function isValidIsoDateTime(value: string): boolean {
+	return !Number.isNaN(parseIso(value).getTime());
+}
+
 /** 2つの ISO 8601 文字列の差分ミリ秒を返す。 */
 export function differenceIsoInMilliseconds(
 	left: string,

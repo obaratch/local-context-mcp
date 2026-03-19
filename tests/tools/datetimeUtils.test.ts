@@ -4,6 +4,7 @@ import {
 	formatDateTimeInTimeZone,
 	getLocalTimeZone,
 	isCacheExpired,
+	isValidIsoDateTime,
 	isValidTtl,
 	parseIso,
 } from "../../src/utils/datetimeUtils.js";
@@ -77,6 +78,14 @@ describe("単体: datetimeUtils", () => {
 		expect(isValidTtl(0)).toBe(true);
 		expect(isValidTtl(-1)).toBe(true);
 		expect(isValidTtl(Number.NaN)).toBe(false);
+	});
+
+	test("isValidIsoDateTime は ISO 8601 文字列を true として判定すること", () => {
+		expect(isValidIsoDateTime("2026-03-19T10:00:00Z")).toBe(true);
+	});
+
+	test("isValidIsoDateTime は壊れた日時文字列を false として判定すること", () => {
+		expect(isValidIsoDateTime("not-a-date")).toBe(false);
 	});
 
 	test("getLocalTimeZone はローカルタイムゾーン名を返すこと", () => {

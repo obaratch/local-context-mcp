@@ -1,6 +1,7 @@
 import {
 	DEFAULT_TIMEZONE_CACHE_TTL_MS,
 	isCacheExpired,
+	isValidIsoDateTime,
 	isValidTimezone,
 	isValidTtl,
 	nowIso,
@@ -132,6 +133,7 @@ function isGeoIpLocation(value: unknown): value is GeoIpLocation {
 		isValidTimezone(record.timezone) &&
 		typeof record.country === "string" &&
 		typeof record.fetchedAt === "string" &&
+		isValidIsoDateTime(record.fetchedAt) &&
 		typeof record.providerName === "string" &&
 		typeof record.providerUrl === "string" &&
 		typeof record.rawData === "string"

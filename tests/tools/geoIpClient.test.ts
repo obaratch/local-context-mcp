@@ -219,6 +219,32 @@ describe.sequential("単体: geoIpClient / cache", () => {
 		expect(result).toBeUndefined();
 		expect(client.getGeoIpCache()).toBeUndefined();
 	});
+
+	test("fetchedAt が壊れた cache 値は使わず削除すること", async () => {
+		process.env.LOCAL_CONTEXT_GEOIP_CACHE_TTL_MS = "86400000";
+		const storeDir = await createTestStoreDir();
+		const client = await loadGeoIpClient(storeDir);
+		client.resetGeoIpCache();
+		client.setGeoIpCache({
+			timezone: "Asia/Tokyo",
+			country: "JP",
+			fetchedAt: "not-a-date",
+			providerName: "cached",
+			providerUrl: "https://cached.example.test",
+			rawData: "cached-raw",
+		} as GeoIpLocation);
+
+		const result = await client.getLocation({
+			now: "2026-03-19T12:00:00Z",
+			providers: [createProvider("first", () => undefined)],
+			fetchText: async () => {
+				throw new Error("network error");
+			},
+		});
+
+		expect(result).toBeUndefined();
+		expect(client.getGeoIpCache()).toBeUndefined();
+	});
 });
 
 describe.sequential("単体: geoIpClient / provider fallback", () => {
