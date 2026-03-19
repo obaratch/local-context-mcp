@@ -95,10 +95,10 @@
 - `.dockerignore` は実装済み。
 - README に LM Studio 向け Docker 利用手順を記載済み。
 - `npm run docker:build` でイメージをビルドできる。
+- 一般利用向け Docker 結合テストは実装済み。
+- store 永続化の opt-in Docker 結合テストは実装済み。
 
 ## 関連ドキュメント
 - `docs/dev-mode.md`
+- `docs/store.md`
 - `docs/testing.md`
-
-## 今後の検討項目
-- Docker 経由の結合テストを追加する。

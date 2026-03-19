@@ -14,6 +14,9 @@
 ### 開発者向け機能 (tools)
 - "dev-helloworld": メッセージ "hello world" を返す
 - "dev-error-test": 結合テスト用。MCP仕様に沿ったエラーを返す。[詳細](docs/tools/dev-error-test.md)
+- "dev-store-set": 結合テスト用。キーに JSON 値を保存する。[詳細](docs/store.md)
+- "dev-store-get": 結合テスト用。キーに保存された JSON 値を取得する。[詳細](docs/store.md)
+- `dev-*` 系は内部向け機能として扱い、README の一般利用者向け説明には載せない。
 
 ## コマンド
 - 開発起動: `npm run dev`
@@ -26,6 +29,9 @@
 ## 開発ルール
 - 配布用エントリポイントは `dist/index.js` を使用する。
 - 開発時は `tsx` で `src/index.ts` を直接実行する。
+- 単体テスト・結合テストを追加または変更する場合は、原則として先にテストを書き、期待どおり all red になることを確認してから実装に入る。
+- 実装中にテストを追加・更新しながら進めてもよいが、少なくとも最初の失敗確認は明示的に行う。
+- `dev-*` 系や store 確認用 tool のような内部機能は、README ではなく `docs/dev-mode.md` や `docs/testing.md` に記述する。
 - ソースを修正して保存したら、必ず `npm run format` と `npm run lint` を実行する。
 
 ## 参照

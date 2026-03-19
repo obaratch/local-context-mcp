@@ -65,6 +65,12 @@ describe("結合: MCPツールリスト取得", () => {
 				expect.objectContaining({
 					name: "dev-error-test",
 				}),
+				expect.objectContaining({
+					name: "dev-store-set",
+				}),
+				expect.objectContaining({
+					name: "dev-store-get",
+				}),
 			]),
 		);
 	});
@@ -88,6 +94,12 @@ describe("結合: MCPツールリスト取得", () => {
 				}),
 				expect.objectContaining({
 					name: "dev-error-test",
+				}),
+				expect.objectContaining({
+					name: "dev-store-set",
+				}),
+				expect.objectContaining({
+					name: "dev-store-get",
 				}),
 			]),
 		);

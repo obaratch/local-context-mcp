@@ -63,7 +63,7 @@
 1. `ENABLE_DEV_TOOLS=true` の場合は `dev-*` が見えること。
 2. `ENABLE_DEV_TOOLS` 未設定または `"true"` 以外の場合は `dev-*` が見えないこと。
 - Docker 起動時の `ENABLE_DEV_TOOLS=true` は隠し機能として扱い、通常の結合テスト対象には含めない。
-- ストア永続化テストなど、内部向け tool を使うテストは Node.js 直接起動で明示的に有効化する。
+- ただし、ストア永続化の opt-in Docker 結合テストでは、内部確認用として `ENABLE_DEV_TOOLS=true` を明示的に使ってよい。
 
 ## 受け入れ条件
 - Node.js から直接起動し、`ENABLE_DEV_TOOLS=true` のときだけ `dev-*` が公開されること。

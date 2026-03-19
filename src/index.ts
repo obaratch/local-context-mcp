@@ -4,7 +4,21 @@ import { z } from "zod";
 import { SERVER_NAME, VERSION } from "./constants.js";
 import { devErrorTest } from "./tools/devErrorTest.js";
 import { devHelloworld } from "./tools/devHelloworld.js";
+import { devStoreGet } from "./tools/devStoreGet.js";
+import { devStoreSet } from "./tools/devStoreSet.js";
 import { whenIsNow } from "./tools/whenIsNow.js";
+import type { StoreValue } from "./utils/storeUtils.js";
+
+const jsonValueSchema: z.ZodType<StoreValue> = z.lazy(() =>
+	z.union([
+		z.string(),
+		z.number(),
+		z.boolean(),
+		z.null(),
+		z.array(jsonValueSchema),
+		z.record(z.string(), jsonValueSchema),
+	]),
+);
 
 export function createServer(): McpServer {
 	const server = new McpServer({
@@ -63,6 +77,33 @@ export function registerDevTools(server: McpServer): void {
 		},
 		async (params) => {
 			return devErrorTest(params);
+		},
+	);
+
+	server.registerTool(
+		"dev-store-set",
+		{
+			description: "結合テスト用。キーに JSON 値を保存する。",
+			inputSchema: {
+				key: z.string(),
+				value: jsonValueSchema,
+			},
+		},
+		async (params) => {
+			return devStoreSet(params);
+		},
+	);
+
+	server.registerTool(
+		"dev-store-get",
+		{
+			description: "結合テスト用。キーに保存された JSON 値を取得する。",
+			inputSchema: {
+				key: z.string(),
+			},
+		},
+		async (params) => {
+			return devStoreGet(params);
 		},
 	);
 }

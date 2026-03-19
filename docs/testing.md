@@ -71,8 +71,31 @@ describe("単体: dev-helloworld", () => {
 - 実装詳細ではなく、利用者から見た振る舞いを優先して検証する。
 - スナップショットテストを導入する場合も、テスト名は日本語で記述する。
 
+## 逐次実行が必要な単体テスト
+- シングルトンやプロセス環境変数のように、同一プロセス内で状態を共有する単体テストでは `describe.sequential(...)` を使ってよい。
+- この用途であれば、Vitest 全体設定や npm script を追加せず、対象テストファイル内だけで逐次実行を指定してよい。
+- 特に `storeUtils` のように保存先やモジュール状態を共有しうるテストでは、まず `describe.sequential(...)` で十分かを優先して判断する。
+- 同一ファイル内の逐次実行だけでは不十分だと分かった場合に限り、`fileParallelism` やテストコマンド分離を追加で検討する。
+
 ## 開発用 tool の結合テスト
 - `dev-*` の公開制御は `docs/dev-mode.md` に従う。
 - 結合テストでは、Node.js 直接起動かつ `ENABLE_DEV_TOOLS=true` のときに `dev-*` が見えることを確認する。
 - 結合テストでは、Node.js 直接起動かつ `ENABLE_DEV_TOOLS` 未設定時に `dev-*` が見えないことを確認する。
 - Docker 起動時の `ENABLE_DEV_TOOLS=true` は隠し機能として扱い、通常の結合テスト対象には含めない。
+
+## Docker ストア永続化テスト
+- ストア永続化の Docker 結合テストは実行コストが高いため、通常の `npm test` には含めない。
+- 実行するときだけ、明示的に以下を使う。
+
+```bash
+RUN_DOCKER_PERSISTENCE_TESTS=true npx vitest run tests/integration/dockerStorePersistence.test.ts
+```
+
+- このテストは `[project-root]/data/docker-store-persistence` を bind mount 先として使う。
+- 実行前に同ディレクトリは削除して作り直す。
+- 実行後は保存ファイルを確認できるよう、同ディレクトリは残す。
+- 保存ファイルは `[project-root]/data/docker-store-persistence/store.json` で、形式は JSON テキストである。
+
+```bash
+cat data/docker-store-persistence/store.json
+```

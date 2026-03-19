@@ -42,6 +42,12 @@ describe("結合: Docker サーバ起動", () => {
 				expect.objectContaining({
 					name: "dev-error-test",
 				}),
+				expect.objectContaining({
+					name: "dev-store-set",
+				}),
+				expect.objectContaining({
+					name: "dev-store-get",
+				}),
 			]),
 		);
 	}, 60_000);
