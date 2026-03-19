@@ -34,3 +34,5 @@
 - [Lint](docs/linting.md)
 - [テスト](docs/testing.md)
 - [Docker 利用仕様](docs/docker.md)
+- [開発モード仕様](docs/dev-mode.md)
+- [ストア仕様](docs/store.md)

@@ -13,7 +13,11 @@ afterEach(async () => {
 
 describe("結合: dev-helloworld", () => {
 	test("callTool でメインメッセージとして hello world を返すこと", async () => {
-		const client = await createIntegrationTestClient(transports);
+		const client = await createIntegrationTestClient(transports, {
+			env: {
+				ENABLE_DEV_TOOLS: "true",
+			},
+		});
 
 		const result = await client.callTool({
 			name: "dev-helloworld",

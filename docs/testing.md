@@ -70,3 +70,9 @@ describe("単体: dev-helloworld", () => {
 - `expect` の matcher は Vitest 標準のものを使用する。
 - 実装詳細ではなく、利用者から見た振る舞いを優先して検証する。
 - スナップショットテストを導入する場合も、テスト名は日本語で記述する。
+
+## 開発用 tool の結合テスト
+- `dev-*` の公開制御は `docs/dev-mode.md` に従う。
+- 結合テストでは、Node.js 直接起動かつ `ENABLE_DEV_TOOLS=true` のときに `dev-*` が見えることを確認する。
+- 結合テストでは、Node.js 直接起動かつ `ENABLE_DEV_TOOLS` 未設定時に `dev-*` が見えないことを確認する。
+- Docker 起動時の `ENABLE_DEV_TOOLS=true` は隠し機能として扱い、通常の結合テスト対象には含めない。

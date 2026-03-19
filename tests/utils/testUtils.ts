@@ -3,6 +3,7 @@
  * 本番ロジックではなく、テスト時の意図表現やデバッグ出力を扱う。
  */
 
+import { execFileSync } from "node:child_process";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { VERSION } from "../../src/constants.js";
@@ -27,14 +28,22 @@ export function logToStdErr(value: unknown): void {
 	process.stderr.write(`${text}\n`);
 }
 
+type IntegrationTestClientOptions = {
+	env?: NodeJS.ProcessEnv;
+};
+
+const dockerIntegrationImageTag = "local-context-mcp:test-integration";
+
 /**
  * 結合テスト用の MCP クライアントを生成して接続する。
  *
  * @param transports テスト終了時に close するため追跡している transport 一覧
+ * @param options サーバ起動時に追加で渡したいオプション
  * @returns `dist/index.js` に接続済みの `Client`
  */
 export async function createIntegrationTestClient(
 	transports: StdioClientTransport[],
+	options?: IntegrationTestClientOptions,
 ): Promise<Client> {
 	const cwd = process.cwd();
 	const serverEntryPoint = `${cwd}/dist/index.js`;
@@ -53,6 +62,57 @@ export async function createIntegrationTestClient(
 		command: process.execPath,
 		args: [serverEntryPoint],
 		cwd,
+		env: {
+			...process.env,
+			...options?.env,
+		},
+		stderr: "pipe",
+	});
+
+	transports.push(transport);
+
+	await client.connect(transport);
+
+	return client;
+}
+
+/**
+ * Docker イメージをビルドし、コンテナ経由の結合テストを実行できる状態にする。
+ */
+export function buildDockerIntegrationTestImage(): string {
+	execFileSync("docker", ["build", "-t", dockerIntegrationImageTag, "."], {
+		cwd: process.cwd(),
+		stdio: "inherit",
+	});
+
+	return dockerIntegrationImageTag;
+}
+
+/**
+ * Docker コンテナ経由で MCP サーバに接続する結合テスト用クライアントを生成する。
+ *
+ * @param transports テスト終了時に close するため追跡している transport 一覧
+ * @param imageTag 接続先 Docker イメージ名
+ * @returns Docker コンテナに接続済みの `Client`
+ */
+export async function createDockerIntegrationTestClient(
+	transports: StdioClientTransport[],
+	imageTag: string,
+): Promise<Client> {
+	const client = new Client(
+		{
+			name: "docker-integration-test-client",
+			version: VERSION,
+		},
+		{
+			capabilities: {},
+		},
+	);
+
+	const transport = new StdioClientTransport({
+		command: "docker",
+		args: ["run", "-i", "--rm", "-e", "TZ=Asia/Tokyo", imageTag],
+		cwd: process.cwd(),
 		stderr: "pipe",
 	});
 

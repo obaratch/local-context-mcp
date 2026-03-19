@@ -76,17 +76,16 @@
 - 例: `TZ=Asia/Tokyo`
 
 ## 公開ツール方針
-- Docker 版でも当面は既存の全ツールを公開する。
-- 対象は以下の 3 つとする。
-  - `when-is-now`
-  - `dev-helloworld`
-  - `dev-error-test`
-- 将来的に `dev-*` を無効化または切り替え可能にする余地は残すが、それは Docker 固有仕様とは切り分けて扱う。
+- Docker で公開する tool の種別は `docs/dev-mode.md` の方針に従う。
+- 一般利用向けの Docker 実行では、公開用 tool だけを利用可能とする。
+- 実装上は `ENABLE_DEV_TOOLS=true` を渡すことで `dev-*` を有効化できても、その使い方は一般向け仕様に含めない。
+- README や通常の利用手順では `dev-*` 有効化を案内しない。
 
 ## 受け入れ条件
 - `docker run -i --rm -e TZ=Asia/Tokyo obaratch/local-context-mcp-server` で MCP サーバとして起動できること。
 - MCP クライアントから `initialize` に成功すること。
 - `tools/list` で公開対象のツール一覧を取得できること。
+- 一般利用向けの Docker 実行で `dev-*` を前提にしないこと。
 - `when-is-now` が ISO 8601 形式かつタイムゾーンオフセット付きの現在日時文字列を返すこと。
 - `stdout` に MCP メッセージ以外の不要な出力が混入しないこと。
 - コンテナ終了後に不要なプロセスや一時リソースを残さないこと。
@@ -96,6 +95,10 @@
 - `.dockerignore` は実装済み。
 - README に LM Studio 向け Docker 利用手順を記載済み。
 - `npm run docker:build` でイメージをビルドできる。
+
+## 関連ドキュメント
+- `docs/dev-mode.md`
+- `docs/testing.md`
 
 ## 今後の検討項目
 - Docker 経由の結合テストを追加する。

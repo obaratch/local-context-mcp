@@ -18,6 +18,14 @@ export function createServer(): McpServer {
 }
 
 export function registerTools(server: McpServer): void {
+	registerPublicTools(server);
+
+	if (isDevToolsEnabled()) {
+		registerDevTools(server);
+	}
+}
+
+export function registerPublicTools(server: McpServer): void {
 	server.registerTool(
 		"when-is-now",
 		{
@@ -28,7 +36,9 @@ export function registerTools(server: McpServer): void {
 			return whenIsNow(params);
 		},
 	);
+}
 
+export function registerDevTools(server: McpServer): void {
 	server.registerTool(
 		"dev-helloworld",
 		{
@@ -55,6 +65,10 @@ export function registerTools(server: McpServer): void {
 			return devErrorTest(params);
 		},
 	);
+}
+
+export function isDevToolsEnabled(): boolean {
+	return process.env.ENABLE_DEV_TOOLS === "true";
 }
 
 export async function main(): Promise<void> {

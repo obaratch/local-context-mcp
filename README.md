@@ -63,5 +63,3 @@ npm run docker:build
 ### 確認
 - 接続後に `tools/list` で以下のツールが見えること
   - `when-is-now`
-  - `dev-helloworld`
-  - `dev-error-test`

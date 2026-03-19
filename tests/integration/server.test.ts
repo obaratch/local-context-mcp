@@ -24,7 +24,7 @@ describe("結合: サーバ起動", () => {
 });
 
 describe("結合: MCPツールリスト取得", () => {
-	test("起動後に tools/list で利用可能なツール一覧を取得できること", async () => {
+	test("起動後に tools/list で公開用ツール一覧を取得できること", async () => {
 		const client = await createIntegrationTestClient(transports);
 
 		const result = await client.listTools();
@@ -50,6 +50,34 @@ describe("結合: MCPツールリスト取得", () => {
 		//     }
 		//   ]
 		// }
+		expect(result.tools).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					name: "when-is-now",
+				}),
+			]),
+		);
+		expect(result.tools).not.toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					name: "dev-helloworld",
+				}),
+				expect.objectContaining({
+					name: "dev-error-test",
+				}),
+			]),
+		);
+	});
+
+	test("ENABLE_DEV_TOOLS=true で起動すると tools/list に dev-* が含まれること", async () => {
+		const client = await createIntegrationTestClient(transports, {
+			env: {
+				ENABLE_DEV_TOOLS: "true",
+			},
+		});
+
+		const result = await client.listTools();
+
 		expect(result.tools).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
