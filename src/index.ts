@@ -7,6 +7,7 @@ import { devHelloworld } from "./tools/devHelloworld.js";
 import { devStoreGet } from "./tools/devStoreGet.js";
 import { devStoreSet } from "./tools/devStoreSet.js";
 import { whenIsNow } from "./tools/whenIsNow.js";
+import { whereAreWe } from "./tools/whereAreWe.js";
 import type { StoreValue } from "./utils/storeUtils.js";
 
 const jsonValueSchema: z.ZodType<StoreValue> = z.lazy(() =>
@@ -48,6 +49,17 @@ export function registerPublicTools(server: McpServer): void {
 		},
 		async (params) => {
 			return whenIsNow(params);
+		},
+	);
+
+	server.registerTool(
+		"where-are-we",
+		{
+			description: "GeoIP 由来の大まかな場所文字列を返す基本機能",
+			inputSchema: {},
+		},
+		async (params) => {
+			return whereAreWe(params);
 		},
 	);
 }
