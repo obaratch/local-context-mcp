@@ -19,6 +19,8 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends tzdata \
 	&& rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /data && chown node:node /data
+
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
