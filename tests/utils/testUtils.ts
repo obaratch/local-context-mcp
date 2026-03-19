@@ -32,6 +32,10 @@ type IntegrationTestClientOptions = {
 	env?: NodeJS.ProcessEnv;
 };
 
+type DockerIntegrationTestClientOptions = {
+	env?: NodeJS.ProcessEnv;
+};
+
 const dockerIntegrationImageTag = "local-context-mcp:test-integration";
 
 /**
@@ -98,6 +102,7 @@ export function buildDockerIntegrationTestImage(): string {
 export async function createDockerIntegrationTestClient(
 	transports: StdioClientTransport[],
 	imageTag: string,
+	options?: DockerIntegrationTestClientOptions,
 ): Promise<Client> {
 	const client = new Client(
 		{
@@ -111,7 +116,7 @@ export async function createDockerIntegrationTestClient(
 
 	const transport = new StdioClientTransport({
 		command: "docker",
-		args: ["run", "-i", "--rm", "-e", "TZ=Asia/Tokyo", imageTag],
+		args: ["run", "-i", "--rm", ...buildDockerEnvArgs(options?.env), imageTag],
 		cwd: process.cwd(),
 		stderr: "pipe",
 	});
@@ -133,5 +138,15 @@ export async function closeTrackedTransports(
 ): Promise<void> {
 	await Promise.all(
 		transports.splice(0).map(async (transport) => transport.close()),
+	);
+}
+
+function buildDockerEnvArgs(env?: NodeJS.ProcessEnv): string[] {
+	if (!env) {
+		return [];
+	}
+
+	return Object.entries(env).flatMap(([key, value]) =>
+		value === undefined ? [] : ["-e", `${key}=${value}`],
 	);
 }

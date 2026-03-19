@@ -9,6 +9,7 @@
 - ストアは内部実装用の補助機能として導入する。
 - アプリケーションコードからは `conf` を直接触らず、`storeUtils` 相当の facade を経由して利用する。
 - 永続化層の差し替えや保存先の制御は facade 側に閉じ込める。
+- auto-tz の GeoIP cache も同じストアを利用するため、store 永続化を有効にすると GeoIP 取得結果も再利用される。
 
 ## 保存対象
 - キーは `string` とする。
@@ -68,7 +69,7 @@
 
 ### 保存先の考え方
 - ローカル実行では `LOCAL_CONTEXT_STORE_DIR` 未設定なら、`conf` の標準保存先を使う。
-- Docker 実行では `LOCAL_CONTEXT_STORE_DIR=/data` を標準とし、`/data` にボリュームをマウントする。
+- Docker 実行では、イメージ既定の `LOCAL_CONTEXT_STORE_DIR=/data` を使い、`/data` にボリュームをマウントする。
 - これにより、コンテナ自体を削除してもボリューム上の保存データを再利用できる。
 - 現在の設定では保存ファイル名は `store.json` になり、内容は JSON テキストとして保存される。
 
@@ -78,23 +79,22 @@
 - `docker run --rm` の使い捨て起動でも、保存データだけはコンテナ外に残す。
 
 ### ランタイム要件
-- コンテナには `LOCAL_CONTEXT_STORE_DIR=/data` を渡す。
+- Docker イメージは `LOCAL_CONTEXT_STORE_DIR=/data` を既定で持つ。
 - `/data` は named volume または bind mount でホスト側に接続する。
 - ストア永続化を使う実行例では、`--rm` の有無にかかわらずボリューム指定を必須とする。
+- 利用者が保存先を変えたい場合だけ、`LOCAL_CONTEXT_STORE_DIR` を明示 override してよい。
 
 ### 実行例
 ```bash
 docker run -i --rm \
   -e TZ=Asia/Tokyo \
-  -e LOCAL_CONTEXT_STORE_DIR=/data \
-  -v local-context-store:/data \
+  --mount source=local-context-store,target=/data \
   obaratch/local-context-mcp-server
 ```
 
 ```bash
 docker run -i --rm \
   -e TZ=Asia/Tokyo \
-  -e LOCAL_CONTEXT_STORE_DIR=/data \
   -v "$(pwd)/data:/data" \
   obaratch/local-context-mcp-server
 ```
@@ -122,6 +122,7 @@ docker run -i --rm \
 ### Docker 結合テストの前提
 - テストでは専用 Docker イメージをビルドする。
 - テストでは `[project-root]/data/` 配下の専用ディレクトリを bind mount して使う。
+- Docker イメージ既定の `LOCAL_CONTEXT_STORE_DIR=/data` をそのまま使う。
 - ストア操作を MCP 越しに確認するため、開発者向けのテスト用 tool を用意する。
 
 ### テスト用 tool 方針
@@ -175,6 +176,7 @@ docker run -i --rm \
 - ボリュームを使わない Docker 実行では永続化保証の対象外であることが文書化されていること。
 
 ## 関連ドキュメント
+- `docs/auto-tz.md`
 - `docs/dev-mode.md`
 - `docs/docker.md`
 - `docs/testing.md`

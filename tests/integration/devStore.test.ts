@@ -1,8 +1,9 @@
-import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import type { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { afterEach, describe, expect, test } from "vitest";
+import {
+	cleanupTrackedTempDirs,
+	createTrackedTempDir,
+} from "../utils/tempDirUtils.js";
 import {
 	closeTrackedTransports,
 	createIntegrationTestClient,
@@ -12,24 +13,12 @@ const transports: StdioClientTransport[] = [];
 const tempDirs: string[] = [];
 
 async function createTestStoreDir(): Promise<string> {
-	const directory = await mkdtemp(
-		join(tmpdir(), "local-context-dev-store-integration-"),
-	);
-	tempDirs.push(directory);
-
-	return directory;
+	return createTrackedTempDir(tempDirs, "local-context-dev-store-integration-");
 }
 
 afterEach(async () => {
 	await closeTrackedTransports(transports);
-	await Promise.all(
-		tempDirs.splice(0).map(async (dir) =>
-			rm(dir, {
-				force: true,
-				recursive: true,
-			}),
-		),
-	);
+	await cleanupTrackedTempDirs(tempDirs);
 });
 
 describe("結合: dev-store-*", () => {

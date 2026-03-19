@@ -57,8 +57,6 @@ async function createDockerStoreClient(
 			"TZ=Asia/Tokyo",
 			"-e",
 			"ENABLE_DEV_TOOLS=true",
-			"-e",
-			"LOCAL_CONTEXT_STORE_DIR=/data",
 			"-v",
 			`${storeDir}:/data`,
 			image,
@@ -82,7 +80,7 @@ describeIf("結合: Docker store 永続化", () => {
 		await closeTrackedTransports(transports);
 	});
 
-	test("同じ bind mount 先を再利用すると別コンテナからも保存値を読み出せること", async () => {
+	test("Docker イメージ既定の保存先を使う場合でも同じ bind mount 先を再利用すると別コンテナからも保存値を読み出せること", async () => {
 		const storeDir = prepareDockerStoreDir();
 
 		const firstClient = await createDockerStoreClient(imageTag, storeDir);
