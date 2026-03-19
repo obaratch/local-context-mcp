@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("../../src/utils/timezoneResolver.js", () => ({
 	resolveTimezone: vi.fn(),
@@ -17,6 +17,11 @@ describe("単体: when-is-now", () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(new Date("2026-03-18T06:21:00Z"));
 		resolveTimezoneMock.mockReset();
+	});
+
+	afterEach(() => {
+		vi.clearAllTimers();
+		vi.useRealTimers();
 	});
 
 	test("解決したタイムゾーンの現在日時を ISO 8601 形式の文字列で返すこと", async () => {

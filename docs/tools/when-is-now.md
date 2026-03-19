@@ -7,9 +7,9 @@
 - `when-is-now` は、現在日時を ISO 8601 形式で返す。
 - 返却時に使うタイムゾーンは、`timezoneResolver` が解決した値に従う。
 - 解決順序は以下とする。
-1. 明示設定された `TZ`
-2. GeoIP cache 付きの `getLocation({ useCache: true })`
-3. サーバ実行環境のローカルタイムゾーン
+  1. 明示設定された `TZ`
+  2. GeoIP cache 付きの `getLocation({ useCache: true })`
+  3. サーバ実行環境のローカルタイムゾーン
 - UTC 固定ではない。
 
 ## 入力

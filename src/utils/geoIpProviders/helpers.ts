@@ -1,4 +1,4 @@
-import { nowIso } from "../datetimeUtils.js";
+import { isValidTimezone, nowIso } from "../datetimeUtils.js";
 import type { GeoIpLocation } from "./types.js";
 
 type UnknownRecord = Record<string, unknown>;
@@ -180,15 +180,6 @@ export function buildLocation(
 	}
 
 	return location;
-}
-
-export function isValidTimezone(value: string): boolean {
-	try {
-		new Intl.DateTimeFormat("en-US", { timeZone: value });
-		return true;
-	} catch {
-		return false;
-	}
 }
 
 function normalizeString(value: unknown): string | undefined {

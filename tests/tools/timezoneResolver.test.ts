@@ -58,7 +58,7 @@ describe.sequential("単体: timezoneResolver / 優先順位", () => {
 		expect(result).toBe("Asia/Tokyo");
 	});
 
-	test("GeoIP 取得結果の timezone が不正な場合はローカルタイムゾーンへフォールバックすること", async () => {
+	test("GeoIP 取得結果の timezone が不正な場合は fallbackTimeZone へフォールバックすること", async () => {
 		delete process.env.TZ;
 		const resolver = await loadResolver();
 
@@ -79,7 +79,7 @@ describe.sequential("単体: timezoneResolver / 優先順位", () => {
 });
 
 describe.sequential("単体: timezoneResolver / フォールバック", () => {
-	test("GeoIP が失敗した場合はローカルタイムゾーンへフォールバックすること", async () => {
+	test("GeoIP が失敗した場合は fallbackTimeZone へフォールバックすること", async () => {
 		delete process.env.TZ;
 		const resolver = await loadResolver();
 
