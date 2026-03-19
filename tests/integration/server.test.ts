@@ -55,6 +55,9 @@ describe("結合: MCPツールリスト取得", () => {
 				expect.objectContaining({
 					name: "when-is-now",
 				}),
+				expect.objectContaining({
+					name: "where-are-we",
+				}),
 			]),
 		);
 		expect(result.tools).not.toContainEqual(
@@ -92,6 +95,9 @@ describe("結合: MCPツールリスト取得", () => {
 			expect.arrayContaining([
 				expect.objectContaining({
 					name: "when-is-now",
+				}),
+				expect.objectContaining({
+					name: "where-are-we",
 				}),
 				expect.objectContaining({
 					name: "dev-helloworld",
