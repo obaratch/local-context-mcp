@@ -10,6 +10,7 @@
 
 ### 基本機能 (tools)
 - "when-is-now": 現在日時を返す。[詳細](docs/tools/when-is-now.md)
+- "where-are-we": GeoIP 由来の大まかな場所文字列を返す。[詳細](docs/tools/where-are-we.md)
 
 ### 開発者向け機能 (tools)
 - "dev-helloworld": メッセージ "hello world" を返す
