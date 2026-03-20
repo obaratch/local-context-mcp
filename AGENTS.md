@@ -3,6 +3,7 @@
 ## 前提
 - 日本語を主言語とする。応答やコメント、ドキュメント等はすべて日本語で。
 - この AGENTS.md は起点でありTOC。詳細は docs/ 内の各種文書を参照。
+- 仕様 → 実装 → 説明文書作成 という流れが基本であり、AGENTS.md → docs/ 内の各種仕様 → テストコード → 実装 → ビルド成果物 → README の順で整える。
 
 ## プロジェクト概要
 - AIが自分とユーザの状況を確認・共有するための Local Context MCP
@@ -34,6 +35,7 @@
 - 実装中にテストを追加・更新しながら進めてもよいが、少なくとも最初の失敗確認は明示的に行う。
 - `dev-*` 系や store 確認用 tool のような内部機能は、README ではなく `docs/dev-mode.md` や `docs/testing.md` に記述する。
 - ソースを修正して保存したら、必ず `npm run format` と `npm run lint` を実行する。
+- push する前に README.md と README.en.md に齟齬がないか確認する。
 
 ## 参照
 - [コーディング方針](docs/coding.md)
