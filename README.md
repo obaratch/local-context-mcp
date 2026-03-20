@@ -1,5 +1,7 @@
 # local-context-mcp
 
+日本語 [English](README.en.md)
+
 `local-context-mcp` は、MCP サーバ実装の習作として作ったミニプロジェクトです。
 AIとユーザが同じ環境にいる前提で、現在の文脈を共有するために便利、かもしれない、機能を提供します。
 
