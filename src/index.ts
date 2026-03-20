@@ -1,3 +1,4 @@
+import process from "node:process";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -127,8 +128,60 @@ export function isDevToolsEnabled(): boolean {
 export async function main(): Promise<void> {
 	const server = createServer();
 	const transport = new StdioServerTransport();
+	let shuttingDown = false;
+
+	const shutdown = async (): Promise<void> => {
+		if (shuttingDown) {
+			return;
+		}
+
+		shuttingDown = true;
+		removeProcessListeners();
+
+		try {
+			await server.close();
+		} catch (error) {
+			logProcessError("server close failed", error);
+		}
+
+		try {
+			await transport.close();
+		} catch (error) {
+			logProcessError("transport close failed", error);
+		}
+	};
+
+	const handleSignal = (): void => {
+		void shutdown().finally(() => {
+			process.exit(0);
+		});
+	};
+
+	const handleStdinClosed = (): void => {
+		void shutdown();
+	};
+
+	const removeProcessListeners = (): void => {
+		process.off("SIGINT", handleSignal);
+		process.off("SIGTERM", handleSignal);
+		process.off("SIGHUP", handleSignal);
+		process.stdin.off("end", handleStdinClosed);
+		process.stdin.off("close", handleStdinClosed);
+	};
+
+	process.once("SIGINT", handleSignal);
+	process.once("SIGTERM", handleSignal);
+	process.once("SIGHUP", handleSignal);
+	process.stdin.once("end", handleStdinClosed);
+	process.stdin.once("close", handleStdinClosed);
 
 	await server.connect(transport);
+}
+
+function logProcessError(message: string, error: unknown): void {
+	const detail =
+		error instanceof Error ? (error.stack ?? error.message) : String(error);
+	process.stderr.write(`[local-context] ${message}: ${detail}\n`);
 }
 
 // テスト時に import しただけでサーバプロセス化しないよう、
@@ -136,5 +189,8 @@ export async function main(): Promise<void> {
 const isEntrypoint = import.meta.url === `file://${process.argv[1]}`;
 
 if (isEntrypoint) {
-	void main();
+	void main().catch((error) => {
+		logProcessError("fatal", error);
+		process.exitCode = 1;
+	});
 }
