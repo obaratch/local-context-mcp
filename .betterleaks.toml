@@ -1,0 +1,12 @@
+title = "local-context Betterleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore generated and vendored directories"
+paths = [
+  '''(^|/)node_modules(/|$)''',
+  '''(^|/)dist(/|$)''',
+  '''(^|/)sarif(/|$)''',
+]

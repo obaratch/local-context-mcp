@@ -41,6 +41,7 @@
 - [コーディング方針](docs/coding.md)
 - [技術スタック](docs/tech-stack.md)
 - [Lint](docs/linting.md)
+- [セキュリティ運用](docs/security.md)
 - [テスト](docs/testing.md)
 - [Docker 利用仕様](docs/docker.md)
 - [開発モード仕様](docs/dev-mode.md)
