@@ -15,6 +15,7 @@
 ## `npm run security:scan` の役割
 - `scripts/security-scan.sh` を起点として Betterleaks を実行する。
 - Betterleaks は Docker 経由で起動する。
+- Betterleaks の Docker イメージは、現時点では評価目的のため `ghcr.io/betterleaks/betterleaks:latest` を使用する。
 - project root をコンテナへ mount し、リポジトリの作業ツリーを走査する。
 - 出力は SARIF 形式で `sarif/betterleaks.sarif` に保存する。
 - 直前の結果が存在する場合は `sarif/betterleaks.last.sarif` に退避してから新しい結果を出力する。
@@ -44,12 +45,14 @@
 - Betterleaks 自体がまだ新しく、このリポジトリでの運用経験が十分ではない。
 - 手元運用でノイズや誤検知の傾向を見ながら、導入範囲を慎重に判断したい。
 - 現時点では、開発速度よりも「必要なときに開発者が補助的に使えること」を優先する。
+- 同様の理由で、現時点では Docker イメージの再現性固定よりも追従性を優先し、固定タグではなく `:latest` を使用する。
 
 ## SARIF の扱い
 - 最新結果は `sarif/betterleaks.sarif` とする。
 - 直前の結果は `sarif/betterleaks.last.sarif` とする。
 - 差分確認が必要なときは、この 2 ファイルを比較する。
 - 古い結果を無制限に保持する運用は行わない。
+- 現時点では、試行中の運用を開発者間で共有しやすくするため、`sarif/` は Git 管理対象とする。
 - agent が `npm run security:scan` などで scan を実行した場合は、結果を開発者の使用言語に合わせて要約して説明する。
 - このリポジトリでは、agent からの結果説明は原則として日本語で行う。
 
