@@ -41,7 +41,7 @@ const dockerIntegrationImageTag = "local-context-mcp:test-integration";
 export type IntegrationTestConnection = {
 	client: Client;
 	transport: StdioClientTransport;
-	process: ChildProcess;
+	childProcess: ChildProcess;
 };
 
 /**
@@ -88,7 +88,7 @@ export async function createTrackedIntegrationTestClient(
 	return {
 		client,
 		transport,
-		process: childProcess,
+		childProcess,
 	};
 }
 

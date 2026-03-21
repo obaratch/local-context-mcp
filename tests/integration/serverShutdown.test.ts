@@ -40,11 +40,11 @@ describe("結合: 終了処理", () => {
 	});
 
 	test("connect 後に SIGTERM を受けたら短時間で終了すること", async () => {
-		const { client, process: child } =
+		const { client, childProcess } =
 			await createTrackedIntegrationTestClient(transports);
 		await expect(client.ping()).resolves.toEqual({});
 
-		child.kill("SIGTERM");
-		await expect(waitForExit(child)).resolves.toBe(0);
+		childProcess.kill("SIGTERM");
+		await expect(waitForExit(childProcess)).resolves.toBe(0);
 	});
 });

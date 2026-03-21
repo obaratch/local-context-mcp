@@ -152,7 +152,15 @@ export async function main(): Promise<void> {
 	};
 
 	const handleTermination = (): void => {
+		const forceExitTimer = setTimeout(() => {
+			process.stderr.write(
+				"[local-context] shutdown timed out; forcing exit\n",
+			);
+			process.exit(1);
+		}, 5_000);
+
 		void shutdown().finally(() => {
+			clearTimeout(forceExitTimer);
 			process.exit(0);
 		});
 	};
