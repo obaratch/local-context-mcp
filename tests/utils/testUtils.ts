@@ -49,7 +49,7 @@ export type IntegrationTestConnection = {
  *
  * @param transports テスト終了時に close するため追跡している transport 一覧
  * @param options サーバ起動時に追加で渡したいオプション
- * @returns `dist/index.js` に接続済みの `Client`
+ * @returns `dist/index.js` に接続済みの `Client` と関連情報
  */
 export async function createTrackedIntegrationTestClient(
 	transports: StdioClientTransport[],
@@ -121,6 +121,7 @@ export function buildDockerIntegrationTestImage(): string {
  *
  * @param transports テスト終了時に close するため追跡している transport 一覧
  * @param imageTag 接続先 Docker イメージ名
+ * @param options サーバ起動時に追加で渡したいオプション
  * @returns Docker コンテナに接続済みの `Client`
  */
 export async function createDockerIntegrationTestClient(
@@ -153,11 +154,13 @@ export async function createDockerIntegrationTestClient(
 }
 
 /**
- * 結合テストで生成した transport をまとめて close する。
+ * `StdioClientTransport` の子プロセス本体を取得する。
  *
- * @param transports close 対象の transport 一覧
+ * `StdioClientTransport` の public API では child process 本体を取得できないため、
+ * 終了シグナルの結合テストでは内部の `_process` を参照している。
+ * SDK の実装詳細に依存するため、`@modelcontextprotocol/sdk` の更新時は
+ * このヘルパーと shutdown テストの動作確認を必ず行うこと。
  */
-
 function getTransportChildProcess(
 	transport: StdioClientTransport,
 ): ChildProcess {
@@ -172,6 +175,11 @@ function getTransportChildProcess(
 	return childProcess;
 }
 
+/**
+ * 結合テストで生成した transport をまとめて close する。
+ *
+ * @param transports close 対象の transport 一覧
+ */
 export async function closeTrackedTransports(
 	transports: StdioClientTransport[],
 ): Promise<void> {
