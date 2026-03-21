@@ -23,6 +23,7 @@
 ## コマンド
 - 開発起動: `npm run dev`
 - ビルド: `npm run build`
+- セキュリティスキャン: `npm run security:scan`
 - Docker イメージビルド: `npm run docker:build`
 - テスト: `npm test`
 - format: `npm run format`
