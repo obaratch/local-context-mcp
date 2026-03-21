@@ -151,29 +151,25 @@ export async function main(): Promise<void> {
 		}
 	};
 
-	const handleSignal = (): void => {
+	const handleTermination = (): void => {
 		void shutdown().finally(() => {
 			process.exit(0);
 		});
 	};
 
-	const handleStdinClosed = (): void => {
-		void shutdown();
-	};
-
 	const removeProcessListeners = (): void => {
-		process.off("SIGINT", handleSignal);
-		process.off("SIGTERM", handleSignal);
-		process.off("SIGHUP", handleSignal);
-		process.stdin.off("end", handleStdinClosed);
-		process.stdin.off("close", handleStdinClosed);
+		process.off("SIGINT", handleTermination);
+		process.off("SIGTERM", handleTermination);
+		process.off("SIGHUP", handleTermination);
+		process.stdin.off("end", handleTermination);
+		process.stdin.off("close", handleTermination);
 	};
 
-	process.once("SIGINT", handleSignal);
-	process.once("SIGTERM", handleSignal);
-	process.once("SIGHUP", handleSignal);
-	process.stdin.once("end", handleStdinClosed);
-	process.stdin.once("close", handleStdinClosed);
+	process.once("SIGINT", handleTermination);
+	process.once("SIGTERM", handleTermination);
+	process.once("SIGHUP", handleTermination);
+	process.stdin.once("end", handleTermination);
+	process.stdin.once("close", handleTermination);
 
 	await server.connect(transport);
 }

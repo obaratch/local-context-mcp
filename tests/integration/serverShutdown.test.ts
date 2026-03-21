@@ -1,17 +1,17 @@
-import type { ChildProcess } from "node:child_process";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import type { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { afterEach, describe, expect, test } from "vitest";
 import {
 	closeTrackedTransports,
-	createIntegrationTestClient,
+	createTrackedIntegrationTestClient,
 } from "../utils/testUtils.js";
 
-const childProcesses: ChildProcess[] = [];
 const transports: StdioClientTransport[] = [];
 
-async function waitForExit(child: ChildProcess): Promise<number | null> {
+async function waitForExit(
+	child: ReturnType<typeof spawn>,
+): Promise<number | null> {
 	const timer = setTimeout(() => {
 		child.kill("SIGKILL");
 	}, 3_000);
@@ -24,32 +24,8 @@ async function waitForExit(child: ChildProcess): Promise<number | null> {
 	}
 }
 
-function getTransportChildProcess(
-	transport: StdioClientTransport,
-): ChildProcess {
-	const child = (
-		transport as StdioClientTransport & { _process?: ChildProcess }
-	)._process;
-
-	if (!child?.pid) {
-		throw new Error("transport child process is not available");
-	}
-
-	return child;
-}
-
 afterEach(async () => {
 	await closeTrackedTransports(transports);
-	await Promise.all(
-		childProcesses.splice(0).map(async (child) => {
-			if (child.exitCode !== null || child.signalCode !== null) {
-				return;
-			}
-
-			child.kill("SIGKILL");
-			await once(child, "exit");
-		}),
-	);
 });
 
 describe("結合: 終了処理", () => {
@@ -58,26 +34,17 @@ describe("結合: 終了処理", () => {
 			cwd: process.cwd(),
 			stdio: ["pipe", "pipe", "pipe"],
 		});
-
-		childProcesses.push(child);
 		child.stdin.end();
 
 		await expect(waitForExit(child)).resolves.toBe(0);
 	});
 
 	test("connect 後に SIGTERM を受けたら短時間で終了すること", async () => {
-		const client = await createIntegrationTestClient(transports);
+		const { client, process: child } =
+			await createTrackedIntegrationTestClient(transports);
 		await expect(client.ping()).resolves.toEqual({});
 
-		const transport = transports.at(-1);
-		if (!transport) {
-			throw new Error("tracked transport is not available");
-		}
-
-		const child = getTransportChildProcess(transport);
-		childProcesses.push(child);
 		child.kill("SIGTERM");
-
 		await expect(waitForExit(child)).resolves.toBe(0);
 	});
 });

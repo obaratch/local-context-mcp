@@ -3,7 +3,7 @@
  * 本番ロジックではなく、テスト時の意図表現やデバッグ出力を扱う。
  */
 
-import { execFileSync } from "node:child_process";
+import { type ChildProcess, execFileSync } from "node:child_process";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { VERSION } from "../../src/constants.js";
@@ -38,6 +38,12 @@ type DockerIntegrationTestClientOptions = {
 
 const dockerIntegrationImageTag = "local-context-mcp:test-integration";
 
+export type IntegrationTestConnection = {
+	client: Client;
+	transport: StdioClientTransport;
+	process: ChildProcess;
+};
+
 /**
  * 結合テスト用の MCP クライアントを生成して接続する。
  *
@@ -45,10 +51,10 @@ const dockerIntegrationImageTag = "local-context-mcp:test-integration";
  * @param options サーバ起動時に追加で渡したいオプション
  * @returns `dist/index.js` に接続済みの `Client`
  */
-export async function createIntegrationTestClient(
+export async function createTrackedIntegrationTestClient(
 	transports: StdioClientTransport[],
 	options?: IntegrationTestClientOptions,
-): Promise<Client> {
+): Promise<IntegrationTestConnection> {
 	const cwd = process.cwd();
 	const serverEntryPoint = `${cwd}/dist/index.js`;
 
@@ -76,6 +82,24 @@ export async function createIntegrationTestClient(
 	transports.push(transport);
 
 	await client.connect(transport);
+
+	const childProcess = getTransportChildProcess(transport);
+
+	return {
+		client,
+		transport,
+		process: childProcess,
+	};
+}
+
+export async function createIntegrationTestClient(
+	transports: StdioClientTransport[],
+	options?: IntegrationTestClientOptions,
+): Promise<Client> {
+	const { client } = await createTrackedIntegrationTestClient(
+		transports,
+		options,
+	);
 
 	return client;
 }
@@ -133,6 +157,21 @@ export async function createDockerIntegrationTestClient(
  *
  * @param transports close 対象の transport 一覧
  */
+
+function getTransportChildProcess(
+	transport: StdioClientTransport,
+): ChildProcess {
+	const childProcess = (
+		transport as StdioClientTransport & { _process?: ChildProcess }
+	)._process;
+
+	if (!childProcess?.pid) {
+		throw new Error("transport child process is not available");
+	}
+
+	return childProcess;
+}
+
 export async function closeTrackedTransports(
 	transports: StdioClientTransport[],
 ): Promise<void> {
