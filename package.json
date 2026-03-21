@@ -18,6 +18,7 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsx watch src/index.ts",
+		"security:scan": "./scripts/security-scan.sh",
 		"docker:build": "docker build -t obaratch/local-context-mcp-server .",
 		"test": "run-s test:unit test:integration",
 		"test:unit": "vitest run tests/tools",

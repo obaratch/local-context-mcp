@@ -23,6 +23,7 @@
 ## コマンド
 - 開発起動: `npm run dev`
 - ビルド: `npm run build`
+- セキュリティスキャン: `npm run security:scan`
 - Docker イメージビルド: `npm run docker:build`
 - テスト: `npm test`
 - format: `npm run format`
@@ -41,6 +42,7 @@
 - [コーディング方針](docs/coding.md)
 - [技術スタック](docs/tech-stack.md)
 - [Lint](docs/linting.md)
+- [セキュリティ運用](docs/security.md)
 - [テスト](docs/testing.md)
 - [Docker 利用仕様](docs/docker.md)
 - [開発モード仕様](docs/dev-mode.md)
