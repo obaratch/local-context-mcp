@@ -1,3 +1,4 @@
+import process from "node:process";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -127,8 +128,64 @@ export function isDevToolsEnabled(): boolean {
 export async function main(): Promise<void> {
 	const server = createServer();
 	const transport = new StdioServerTransport();
+	let shuttingDown = false;
+
+	const shutdown = async (): Promise<void> => {
+		if (shuttingDown) {
+			return;
+		}
+
+		shuttingDown = true;
+		removeProcessListeners();
+
+		try {
+			await server.close();
+		} catch (error) {
+			logProcessError("server close failed", error);
+		}
+
+		try {
+			await transport.close();
+		} catch (error) {
+			logProcessError("transport close failed", error);
+		}
+	};
+
+	const handleTermination = (): void => {
+		const forceExitTimer = setTimeout(() => {
+			process.stderr.write(
+				"[local-context] shutdown timed out; forcing exit\n",
+			);
+			process.exit(1);
+		}, 5_000);
+
+		void shutdown().finally(() => {
+			clearTimeout(forceExitTimer);
+			process.exit(0);
+		});
+	};
+
+	const removeProcessListeners = (): void => {
+		process.off("SIGINT", handleTermination);
+		process.off("SIGTERM", handleTermination);
+		process.off("SIGHUP", handleTermination);
+		process.stdin.off("end", handleTermination);
+		process.stdin.off("close", handleTermination);
+	};
+
+	process.once("SIGINT", handleTermination);
+	process.once("SIGTERM", handleTermination);
+	process.once("SIGHUP", handleTermination);
+	process.stdin.once("end", handleTermination);
+	process.stdin.once("close", handleTermination);
 
 	await server.connect(transport);
+}
+
+function logProcessError(message: string, error: unknown): void {
+	const detail =
+		error instanceof Error ? (error.stack ?? error.message) : String(error);
+	process.stderr.write(`[local-context] ${message}: ${detail}\n`);
 }
 
 // テスト時に import しただけでサーバプロセス化しないよう、
@@ -136,5 +193,8 @@ export async function main(): Promise<void> {
 const isEntrypoint = import.meta.url === `file://${process.argv[1]}`;
 
 if (isEntrypoint) {
-	void main();
+	void main().catch((error) => {
+		logProcessError("fatal", error);
+		process.exitCode = 1;
+	});
 }
