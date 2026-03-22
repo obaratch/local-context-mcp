@@ -5,7 +5,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY tsconfig.json tsconfig.build.json ./
+COPY tsconfig.json tsconfig.typecheck.json ./
+COPY scripts ./scripts
 COPY src ./src
 RUN npm run build
 
@@ -22,9 +23,7 @@ RUN apt-get update \
 
 RUN mkdir -p /data && chown node:node /data
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
+COPY package.json ./
 COPY --from=build /app/dist ./dist
 
 USER node

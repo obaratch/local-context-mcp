@@ -1,47 +1,30 @@
 import process from "node:process";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
 import { SERVER_NAME, VERSION } from "./constants.js";
-import { devErrorTest } from "./tools/devErrorTest.js";
-import { devHelloworld } from "./tools/devHelloworld.js";
-import { devStoreGet } from "./tools/devStoreGet.js";
-import { devStoreSet } from "./tools/devStoreSet.js";
 import { whenIsNow } from "./tools/whenIsNow.js";
 import { whereAreWe } from "./tools/whereAreWe.js";
-import type { StoreValue } from "./utils/storeUtils.js";
 
-const jsonValueSchema: z.ZodType<StoreValue> = z.lazy(() =>
-	z.union([
-		z.string(),
-		z.number(),
-		z.boolean(),
-		z.null(),
-		z.array(jsonValueSchema),
-		z.record(z.string(), jsonValueSchema),
-	]),
-);
-
-export function createServer(): McpServer {
+async function createServer(): Promise<McpServer> {
 	const server = new McpServer({
 		name: SERVER_NAME,
 		version: VERSION,
 	});
 
-	registerTools(server);
+	await registerTools(server);
 
 	return server;
 }
 
-export function registerTools(server: McpServer): void {
+async function registerTools(server: McpServer): Promise<void> {
 	registerPublicTools(server);
 
 	if (isDevToolsEnabled()) {
-		registerDevTools(server);
+		await registerDevTools(server);
 	}
 }
 
-export function registerPublicTools(server: McpServer): void {
+function registerPublicTools(server: McpServer): void {
 	server.registerTool(
 		"when-is-now",
 		{
@@ -65,7 +48,22 @@ export function registerPublicTools(server: McpServer): void {
 	);
 }
 
-export function registerDevTools(server: McpServer): void {
+async function registerDevTools(server: McpServer): Promise<void> {
+	const [
+		{ z },
+		{ devErrorTest },
+		{ devHelloworld },
+		{ devStoreGet },
+		{ devStoreSet },
+	] = await Promise.all([
+		import("zod"),
+		import("./tools/devErrorTest.js"),
+		import("./tools/devHelloworld.js"),
+		import("./tools/devStoreGet.js"),
+		import("./tools/devStoreSet.js"),
+	]);
+	const jsonValueSchema = buildJsonValueSchema(z);
+
 	server.registerTool(
 		"dev-helloworld",
 		{
@@ -121,12 +119,12 @@ export function registerDevTools(server: McpServer): void {
 	);
 }
 
-export function isDevToolsEnabled(): boolean {
+function isDevToolsEnabled(): boolean {
 	return process.env.ENABLE_DEV_TOOLS === "true";
 }
 
-export async function main(): Promise<void> {
-	const server = createServer();
+async function main(): Promise<void> {
+	const server = await createServer();
 	const transport = new StdioServerTransport();
 	let shuttingDown = false;
 
@@ -180,6 +178,25 @@ export async function main(): Promise<void> {
 	process.stdin.once("close", handleTermination);
 
 	await server.connect(transport);
+}
+
+function buildJsonValueSchema(
+	z: typeof import("zod").z,
+): import("zod").ZodType<import("./utils/storeUtils.js").StoreValue> {
+	const jsonValueSchema: import("zod").ZodType<
+		import("./utils/storeUtils.js").StoreValue
+	> = z.lazy(() =>
+		z.union([
+			z.string(),
+			z.number(),
+			z.boolean(),
+			z.null(),
+			z.array(jsonValueSchema),
+			z.record(z.string(), jsonValueSchema),
+		]),
+	);
+
+	return jsonValueSchema;
 }
 
 function logProcessError(message: string, error: unknown): void {
