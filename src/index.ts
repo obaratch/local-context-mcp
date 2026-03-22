@@ -5,7 +5,7 @@ import { SERVER_NAME, VERSION } from "./constants.js";
 import { whenIsNow } from "./tools/whenIsNow.js";
 import { whereAreWe } from "./tools/whereAreWe.js";
 
-export async function createServer(): Promise<McpServer> {
+async function createServer(): Promise<McpServer> {
 	const server = new McpServer({
 		name: SERVER_NAME,
 		version: VERSION,
@@ -16,7 +16,7 @@ export async function createServer(): Promise<McpServer> {
 	return server;
 }
 
-export async function registerTools(server: McpServer): Promise<void> {
+async function registerTools(server: McpServer): Promise<void> {
 	registerPublicTools(server);
 
 	if (isDevToolsEnabled()) {
@@ -24,7 +24,7 @@ export async function registerTools(server: McpServer): Promise<void> {
 	}
 }
 
-export function registerPublicTools(server: McpServer): void {
+function registerPublicTools(server: McpServer): void {
 	server.registerTool(
 		"when-is-now",
 		{
@@ -48,7 +48,7 @@ export function registerPublicTools(server: McpServer): void {
 	);
 }
 
-export async function registerDevTools(server: McpServer): Promise<void> {
+async function registerDevTools(server: McpServer): Promise<void> {
 	const [
 		{ z },
 		{ devErrorTest },
@@ -119,11 +119,11 @@ export async function registerDevTools(server: McpServer): Promise<void> {
 	);
 }
 
-export function isDevToolsEnabled(): boolean {
+function isDevToolsEnabled(): boolean {
 	return process.env.ENABLE_DEV_TOOLS === "true";
 }
 
-export async function main(): Promise<void> {
+async function main(): Promise<void> {
 	const server = await createServer();
 	const transport = new StdioServerTransport();
 	let shuttingDown = false;
