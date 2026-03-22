@@ -39,11 +39,12 @@
 ### `registerDevTools(server)`
 - `dev-*` 系 tool だけを登録する。
 - 開発、デバッグ、結合テストのための tool をここに集約する。
+- 実装と依存の読み込みは遅延し、`ENABLE_DEV_TOOLS=true` のときだけ動的 import する。
 - 例: `dev-helloworld`、`dev-error-test`、今後追加する `dev-store-*`
 
 ### `registerTools(server)`
 - `registerPublicTools(server)` を常に呼ぶ。
-- `process.env.ENABLE_DEV_TOOLS === "true"` の場合のみ `registerDevTools(server)` を呼ぶ。
+- `process.env.ENABLE_DEV_TOOLS === "true"` の場合のみ `registerDevTools(server)` を非同期で呼ぶ。
 - tool の公開判定ロジックはこの関数に集約する。
 
 ## 公開ルール

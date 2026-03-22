@@ -4,9 +4,10 @@
 		"noEmit": false,
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true
+		"declaration": false,
+		"declarationMap": false,
+		"sourceMap": false,
+		"removeComments": true
 	},
 	"include": ["src/**/*.ts"]
 }
