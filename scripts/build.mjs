@@ -12,6 +12,6 @@ await build({
 	platform: "node",
 	target: "node24",
 	minify: true,
-	legalComments: "none",
+	legalComments: "eof",
 	splitting: true,
 });
