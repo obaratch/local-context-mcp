@@ -6,11 +6,12 @@ mkdirSync("dist", { recursive: true });
 
 await build({
 	entryPoints: ["src/index.ts"],
-	outfile: "dist/index.js",
+	outdir: "dist",
 	bundle: true,
 	format: "esm",
 	platform: "node",
 	target: "node24",
 	minify: true,
 	legalComments: "none",
+	splitting: true,
 });
