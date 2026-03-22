@@ -15,7 +15,7 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json --noEmit && node ./scripts/build.mjs",
+		"build": "tsc -p tsconfig.typecheck.json && node ./scripts/build.mjs",
 		"dev": "tsx watch src/index.ts",
 		"security:scan": "./scripts/security-scan.sh",
 		"docker:build": "docker build -t obaratch/local-context-mcp-server .",
