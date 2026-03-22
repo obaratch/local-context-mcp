@@ -40,7 +40,7 @@
 ## 実行方法
 - 単体テストは `npm run test:unit` で実行する。
 - 結合テストは `npm run test:integration` で実行する。
-- `npm run test` では `run-s` を使って `test:unit` と `test:integration` を順に実行する。
+- `npm run test` では `npm run test:unit && npm run test:integration` の順で実行する。
 - 結合テストは `dist/index.js` を対象にするため、`npm run test:integration` の中で事前に `npm run build` を実行する。
 - Docker を使う結合テストを実行する環境では、`docker` コマンドが利用可能であることを前提とする。
 
